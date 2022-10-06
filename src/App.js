@@ -1,22 +1,27 @@
+import React, { useCallback, useEffect, useState } from "react";
+import { getCoins } from "./utils/marketplace";
+import { login } from "./utils/near";
 import "./App.css";
 
 function App() {
+  const account = window.walletConnection.account();
+  const [coins, setCoins] = useState([]);
+  const fetchCoins = useCallback(async () => {
+    if (account.accountId) {
+      setCoins(await getCoins());
+    }
+  }, [account]);
+  useEffect(() => {
+    fetchCoins();
+  }, [fetchCoins]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {account.accountId ? (
+        coins.forEach((coin) => console.log(coin))
+      ) : (
+        <button onClick={login}>CONNECT WALLET</button>
+      )}
+    </>
   );
 }
 
